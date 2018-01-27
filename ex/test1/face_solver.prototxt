@@ -1,0 +1,22 @@
+net: "face_train_test.prototxt"
+test_iter: 10
+test_interval: 500
+
+base_lr: 0.0001
+lr_policy: "fixed"
+gamma: 0.1
+
+#stepvalue: 1600000
+#stepvalue: 2400000
+#stepvalue: 2800000
+max_iter: 2800000
+
+display: 100
+#momentum: 0.9
+weight_decay: 0.00005
+snapshot: 1000
+snapshot_prefix: "face_ms/face_ms"
+
+solver_mode: GPU
+type: "RMSProp"
+rms_decay: 0.98
