@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <time.h>
 
 #include "caffe/data_transformer.hpp"
 #include "caffe/layers/base_data_layer.hpp"
@@ -30,6 +31,44 @@ template <typename Dtype>
 ImageDataLayer<Dtype>::~ImageDataLayer<Dtype>() {
   this->StopInternalThread();
 }
+
+//added by shenruixue 20180227
+template <typename Dtype>
+void ImageDataLayer<Dtype>::CutOutImg(Mat &src, Mat &dst)
+{
+    dst = src.clone();
+    int height = src.rows;
+    int width = src.cols;
+    const float MAX_RATIO = 0.9;
+    const float MMIN_RATIO = 0.2;
+    int current_iter = Caffe::current_iter();
+    int max_iter = Caffe::max_iter();
+//    LOG(INFO) << "current_iter is" << current_iter;
+//    LOG(INFO) << "max_iter is" << max_iter;
+    float cur_ratio = MMIN_RATIO + MAX_RATIO * float(current_iter) / float(max_iter);
+    if(max_iter < 10)
+    {
+        cur_ratio = MMIN_RATIO;
+    }
+    int cut_out_len = (int)(width * cur_ratio);
+    int x_start = 0;
+    int x_end   = width - cut_out_len;
+    int y_start = 0;
+    int y_end   = height - cut_out_len;
+    srand((unsigned)time(NULL));
+    int x = (rand() % (x_end - x_start))+ x_start + 1;
+    int y = (rand() % (y_end - y_start))+ y_start + 1;
+//    LOG(INFO) << "cur_ratio is " << cur_ratio;
+//    LOG(INFO) << "cur_ratio is" << cur_ratio;
+//    LOG(INFO) << "cur_ratio is" << cur_ratio;
+    cv::Mat Roi(dst, cv::Rect(x, y, cut_out_len, cut_out_len));
+    cv::RNG rnger(cv::getTickCount());
+    rnger.fill(Roi, cv::RNG::UNIFORM, cv::Scalar::all(0), cv::Scalar::all(256));
+    //Roi = cv::Scalar(rng.uniform(0,255),rng.uniform(0,255),rng.uniform(0,255));
+
+}
+//added by shenruixue 20180227
+
 
 template <typename Dtype>
 void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
@@ -139,6 +178,7 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
 //    this->prefetch_[i]->label_.Reshape(label_shape);
       this->prefetch_[i]->label_.Reshape(batch_size,num_labels,1,1);
   }
+
 }
 
 template <typename Dtype>
@@ -302,12 +342,28 @@ void ImageDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
       cv_img.copyTo(cv_img_resize_dst);
     }
     //end added by shenruixue
+    //add by shenruixue 20180226
+    cv::Mat cv_img_distort_dst;
+    this->data_transformer_->DistortImage(cv_img_resize_dst, cv_img_distort_dst);
+    const bool is_cut = image_data_param.is_cut();
+    cv::Mat cv_img_cut_dst;
+    if(is_cut)
+    {
+        CutOutImg(cv_img_distort_dst, cv_img_cut_dst);
+    }
+    else
+    {
+        cv_img_distort_dst.copyTo(cv_img_cut_dst);
+    }
 
+
+//    string str = std::to_string(read_time);
+//    cv::imwrite("/hard_disk2/100.202_files/ReID/gg_net_triloss/local_fea/test/" + str + ".jpg", cv_img_cut_dst);
 
     // Apply transformations (mirror, crop...) to the image
     int offset = batch->data_.offset(item_id);
     this->transformed_data_.set_cpu_data(prefetch_data + offset);
-    this->data_transformer_->Transform(cv_img_resize_dst, &(this->transformed_data_));
+    this->data_transformer_->Transform(cv_img_cut_dst, &(this->transformed_data_));
     trans_time += timer.MicroSeconds();
 //modified by shenruixue
     //prefetch_label[item_id] = lines_[lines_id_].second;
@@ -330,7 +386,10 @@ void ImageDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   DLOG(INFO) << "Prefetch batch: " << batch_timer.MilliSeconds() << " ms.";
   DLOG(INFO) << "     Read time: " << read_time / 1000 << " ms.";
   DLOG(INFO) << "Transform time: " << trans_time / 1000 << " ms.";
+
+
 }
+
 
 INSTANTIATE_CLASS(ImageDataLayer);
 REGISTER_LAYER_CLASS(ImageData);

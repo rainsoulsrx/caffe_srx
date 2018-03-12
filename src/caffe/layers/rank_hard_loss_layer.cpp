@@ -190,6 +190,8 @@ void RankHardLossLayer<Dtype>::set_mask(const vector<Blob<Dtype>*>& bottom)
                     }
                     //LOG(INFO) << "neg norm2_i_j is" << norm2_i_j;
                     //norm2_i_j = std::sqrt(norm2_i_j); comment this line for easy gradient calculate
+                    if(norm2_i_j > 10.0)
+                    {norm2_i_j = 10.0;}
                     ts_local_neg = (std::exp(norm2_i_j) - 1.0) / (std::exp(norm2_i_j) + 1.0);
                     dis_local_neg_data[index_anchor + i_local * height_local + j_local] = ts_local_neg;
                     //dis_local_neg_data[i * height_local * height_local + j_local * height_local + i_local] = ts_local_neg;
@@ -234,6 +236,8 @@ void RankHardLossLayer<Dtype>::set_mask(const vector<Blob<Dtype>*>& bottom)
                     }
                     //LOG(INFO) << "pos norm2_i_j is" << norm2_i_j;
                     //norm2_i_j = std::sqrt(norm2_i_j); comment this line for easy gradient calculate
+                    if(norm2_i_j > 10.0)
+                    {norm2_i_j = 10.0;}
                     ts_local_pos = (std::exp(norm2_i_j) - 1.0) / (std::exp(norm2_i_j) + 1.0);
                     dis_local_pos_data[index_anchor + i_local * height_local + j_local] = ts_local_pos;
                     //dis_local_pos_data[i * height_local * height_local + j_local * height_local + i_local] = ts_local_pos;
@@ -492,6 +496,8 @@ void RankHardLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
                             norm2_i_j += (fori_local[0 * channel_local + k_local] - fneg_local[0 * channel_local + k_local])
                                        * (fori_local[0 * channel_local + k_local] - fneg_local[0 * channel_local + k_local]);
                         }
+                        if(norm2_i_j > 10.0)
+                        {norm2_i_j = 10.0;}
                         //norm2_i_j = std::sqrt(norm2_i_j); comment this line for easy gradient calculate
                         Dtype exp_norm2 = std::exp(norm2_i_j);
                         for(int k_local = 0; k_local < channel_local; k_local++)
@@ -511,6 +517,8 @@ void RankHardLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
                             norm2_i_j += (fori_local[height_local_index * channel_local + k_local] - fneg_local[height_local_index * channel_local + k_local])
                                     * (fori_local[height_local_index * channel_local + k_local] - fneg_local[height_local_index * channel_local + k_local]);
                         }
+                        if(norm2_i_j > 10.0)
+                        {norm2_i_j = 10.0;}
                         //norm2_i_j = std::sqrt(norm2_i_j); comment this line for easy gradient calculate
                         exp_norm2 = std::exp(norm2_i_j);
                         for(int k_local = 0; k_local < channel_local; k_local++)
@@ -539,6 +547,8 @@ void RankHardLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
                                 norm2_i_j += (fori_local[i_local * channel_local + k_local] - fneg_local[j_local * channel_local + k_local])
                                         * (fori_local[i_local * channel_local + k_local] - fneg_local[j_local * channel_local + k_local]);
                             }
+                            if(norm2_i_j > 10.0)
+                            {norm2_i_j = 10.0;}
                             //norm2_i_j = std::sqrt(norm2_i_j); comment this line for easy gradient calculate
                             Dtype exp_norm2 = std::exp(norm2_i_j);
                             for(int k_local = 0; k_local < channel_local; k_local++)
@@ -562,6 +572,8 @@ void RankHardLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
                                 norm2_i_j += (fori_local[i_local * channel_local + k_local] - fneg_local[j_local * channel_local + k_local])
                                         * (fori_local[i_local * channel_local + k_local] - fneg_local[j_local * channel_local + k_local]);
                             }
+                            if(norm2_i_j > 10.0)
+                            {norm2_i_j = 10.0;}
                             //norm2_i_j = std::sqrt(norm2_i_j); comment this line for easy gradient calculate
                             Dtype exp_norm2 = std::exp(norm2_i_j);
                             for(int k_local = 0; k_local < channel_local; k_local++)
@@ -593,6 +605,8 @@ void RankHardLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
                             norm2_i_j += (fori_local[0 * channel_local + k_local] - fpos_local[0 * channel_local + k_local])
                                        * (fori_local[0 * channel_local + k_local] - fpos_local[0 * channel_local + k_local]);
                         }
+                        if(norm2_i_j > 10.0)
+                        {norm2_i_j = 10.0;}
                         //norm2_i_j = std::sqrt(norm2_i_j); comment this line for easy gradient calculate
                         Dtype exp_norm2 = std::exp(norm2_i_j);
                         //LOG(INFO) << "exp_norm2 is "<< exp_norm2;
@@ -614,6 +628,8 @@ void RankHardLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
                             norm2_i_j += (fori_local[height_local_index * channel_local + k_local] - fpos_local[height_local_index * channel_local + k_local])
                                        * (fori_local[height_local_index * channel_local + k_local] - fpos_local[height_local_index * channel_local + k_local]);
                         }
+                        if(norm2_i_j > 10.0)
+                        {norm2_i_j = 10.0;}
                         //norm2_i_j = std::sqrt(norm2_i_j); comment this line for easy gradient calculate
                         exp_norm2 = std::exp(norm2_i_j);
                         //LOG(INFO) << "exp_norm2 is "<< exp_norm2;
@@ -643,6 +659,8 @@ void RankHardLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
                                 norm2_i_j += (fori_local[i_local * channel_local + k_local] - fpos_local[j_local * channel_local + k_local])
                                            * (fori_local[i_local * channel_local + k_local] - fpos_local[j_local * channel_local + k_local]);
                             }
+                            if(norm2_i_j > 10.0)
+                            {norm2_i_j = 10.0;}
                             //norm2_i_j = std::sqrt(norm2_i_j); comment this line for easy gradient calculate
                             Dtype exp_norm2 = std::exp(norm2_i_j);
                             //LOG(INFO) << "norm2_i_j is "<< norm2_i_j;
@@ -668,6 +686,8 @@ void RankHardLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
                                 norm2_i_j += (fori_local[i_local * channel_local + k_local] - fpos_local[j_local * channel_local + k_local])
                                            * (fori_local[i_local * channel_local + k_local] - fpos_local[j_local * channel_local + k_local]);
                             }
+                            if(norm2_i_j > 10.0)
+                            {norm2_i_j = 10.0;}
                             //norm2_i_j = std::sqrt(norm2_i_j); comment this line for easy gradient calculate
                             Dtype exp_norm2 = std::exp(norm2_i_j);
                             //LOG(INFO) << "exp_norm2 is "<< exp_norm2;

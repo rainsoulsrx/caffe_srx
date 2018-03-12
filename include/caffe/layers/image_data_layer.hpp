@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+
 #include "caffe/blob.hpp"
 #include "caffe/data_transformer.hpp"
 #include "caffe/internal_thread.hpp"
@@ -34,6 +35,7 @@ class ImageDataLayer : public BasePrefetchingDataLayer<Dtype> {
   
   static int MyRandomData(int i);
   void Shuffle_ori_inner();
+  void CutOutImg(cv::Mat &src, cv::Mat &dst);
   
  protected:
   shared_ptr<Caffe::RNG> prefetch_rng_;
