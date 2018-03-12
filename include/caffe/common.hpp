@@ -167,6 +167,17 @@ class Caffe {
   inline static void set_multiprocess(bool val) { Get().multiprocess_ = val; }
   inline static bool root_solver() { return Get().solver_rank_ == 0; }
 
+  //added by shenruixue 20180226
+  //Returns the current iteration times
+  inline static int current_iter() { return Get().cur_iter_; }
+  //Sets the current iteration times
+  inline static void set_cur_iter(int iter) { Get().cur_iter_ = iter; }
+  //Returns the current iteration times
+  inline static int max_iter() { return Get().max_iter_; }
+  //Sets the current iteration times
+  inline static void set_max_iter(int iter) { Get().max_iter_ = iter; }
+  //end added
+
  protected:
 #ifndef CPU_ONLY
   cublasHandle_t cublas_handle_;
@@ -180,10 +191,15 @@ class Caffe {
   int solver_count_;
   int solver_rank_;
   bool multiprocess_;
+  //added by shenruixue 20180226
+  static int cur_iter_;
+  static int max_iter_;
+  //end added
 
  private:
   // The private constructor to avoid duplicate instantiation.
   Caffe();
+
 
   DISABLE_COPY_AND_ASSIGN(Caffe);
 };

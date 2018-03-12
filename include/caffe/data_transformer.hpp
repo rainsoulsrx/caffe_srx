@@ -51,6 +51,9 @@ class DataTransformer {
                 Blob<Dtype>* transformed_blob);
 
 #ifdef USE_OPENCV
+  //added by shenruixue 20180226
+  void DistortImage(const cv::Mat src, cv::Mat &cv_img_distort_dst);
+
   /**
    * @brief Applies the transformation defined in the data layer's
    * transform_param block to a vector of Mat.

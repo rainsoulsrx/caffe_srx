@@ -9,6 +9,7 @@
 #include "caffe/util/io.hpp"
 #include "caffe/util/math_functions.hpp"
 #include "caffe/util/rng.hpp"
+#include "caffe/util/im_transforms.hpp"
 
 namespace caffe {
 
@@ -437,6 +438,19 @@ void DataTransformer<Dtype>::Transform(Blob<Dtype>* input_blob,
     caffe_scal(size, scale, transformed_data);
   }
 }
+
+//added by shenruixue 20180226
+template<typename Dtype>
+void DataTransformer<Dtype>::DistortImage(const cv::Mat src, cv::Mat &cv_img_distort_dst)
+{
+    if (!param_.has_distort_param()) {
+      //distort_datum->CopyFrom(datum);
+      LOG(INFO) << "Please provide distort param";
+      return;
+    }
+    cv_img_distort_dst = ApplyDistort(src, param_.distort_param());
+}
+//added by shenruixue 20180226
 
 template<typename Dtype>
 vector<int> DataTransformer<Dtype>::InferBlobShape(const Datum& datum) {

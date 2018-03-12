@@ -11,6 +11,8 @@ namespace caffe {
 
 // Make sure each thread can have different values.
 static boost::thread_specific_ptr<Caffe> thread_instance_;
+int Caffe::cur_iter_ = 0;
+int Caffe::max_iter_ = 0;
 
 Caffe& Caffe::Get() {
   if (!thread_instance_.get()) {
